@@ -6,7 +6,7 @@
       Where should we send your freshly roasted coffee beans?
     </h2>
 
-    <form class="form">
+    <form class="form" @input="submit">
       <div class="form-group">
         <label class="form-label" for="delivery_name">Name</label>
         <input v-model="$v.form.recipient.$model" type="text" placeholder="Recipients Name" class="form-control" id="delivery_name">
@@ -25,13 +25,22 @@
 <script>
   import {required} from 'vuelidate/lib/validators'
   export default {
+    props: {
+      wizardData: {
+        type: Object,
+        required: true
+      }
+    },
     data () {
       return {
         form: {
           address: null,
-          recipient: null
+          recipient: this.wizardData.name
         }
       }
+    },
+    activated() {
+      this.form.recipient = this.wizardData.name
     },
     validations: {
       form: {
@@ -41,6 +50,17 @@
         recipient: {
           required
         }
+      }
+    },
+    methods: {
+      submit() {
+          this.$emit('update', {
+            data: {
+              address: this.form.address,
+              recipient: this.form.recipient,
+            },
+            valid: !this.$v.$invalid
+           })
       }
     }
   }
